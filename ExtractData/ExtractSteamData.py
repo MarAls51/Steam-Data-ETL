@@ -7,12 +7,7 @@ import re
 def clean_data(data: list) -> pd.DataFrame:
     df = pd.DataFrame(data)
 
-    def clean_and_check(x):
-        if re.search(r"[^A-Za-z0-9\s\-\.,!?:]", str(x)):
-            return "" 
-        return str(x) 
-
-    df = df.map(clean_and_check)
+    df = df.map(lambda x: re.sub(r"[^A-Za-z0-9\s\-\.,!?]", "", str(x)))
 
     df.replace("", pd.NA, inplace=True)
     df.drop_duplicates(inplace=True)
