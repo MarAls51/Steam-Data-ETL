@@ -7,9 +7,9 @@ import re
 def clean_data(data: list) -> pd.DataFrame:
     df = pd.DataFrame(data)
 
-    df["name"] = df["name"].apply(lambda x: re.sub(r"[^A-Za-z0-9\s\-\.,!?]", "", x))
-    df = df.loc[df["name"] != ""]
-  
+    df = df.map(lambda x: re.sub(r"[^A-Za-z0-9\s\-\.,!?]", "", str(x)))
+
+    df.replace("", pd.NA, inplace=True)
     df.drop_duplicates(inplace=True)
     df.dropna(axis="rows", inplace=True)
 
@@ -19,7 +19,6 @@ def clean_data(data: list) -> pd.DataFrame:
     df.to_csv("data_output.csv", index=False, encoding="utf-8")
     
     return df
-
 
 # Fetches all the steam games, works with my cron jobs. API returns the ID of the game as well as the name.
 def fetch_all_steam_games() -> pd.DataFrame:
@@ -36,6 +35,7 @@ def fetch_all_steam_games() -> pd.DataFrame:
 def fetch_game_reviews(gameid: str, review_limit: int = None) -> pd.DataFrame:
     data = CursorPagination.cursor_pagination(gameid, review_limit)
     
+    print(data, "data")
     if data is None or len(data) == 0:
         raise Exception(f"Failed to fetch reviews for game with ID: {gameid}")
     
