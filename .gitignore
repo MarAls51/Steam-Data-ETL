@@ -1,0 +1,9 @@
+# env stuff
+/env
+.env
+
+# python bytecode nonsense
+__pycache__/
+
+# just for debugging
+data_output.csv
