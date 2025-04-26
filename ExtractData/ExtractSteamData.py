@@ -2,7 +2,6 @@ import pandas as pd
 import requests
 import ExtractData.CursorPagination as CursorPagination
 import re
-from googletrans import Translator
 
 # general cleaning of data
 def clean_data(data: list) -> pd.DataFrame:
