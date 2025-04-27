@@ -68,7 +68,5 @@ def cursor_pagination(gameid: str, review_limit: int = None):
         if not cursor:
             print("No more pages available. Stopping.\n")
             break
-
-        print(all_reviews)
     
     return all_reviews

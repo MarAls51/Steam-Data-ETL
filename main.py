@@ -1,8 +1,10 @@
 import argparse
 import ExtractData.ExtractSteamData as ExtractData
+import LoadData.LoadSteamData as LoadData
 
 def cron_job_fetch_games():
     games_df = ExtractData.fetch_all_steam_games()
+    LoadData.insert_sql_data(games_df)
     print(games_df.head())
 
 def fetch_reviews_for_game(gameid, review_limit):
@@ -32,6 +34,8 @@ def parse_arguments():
     return parser.parse_args()
 
 def main():
+    if not LoadData.start_sql_pipeline():
+        return
     args = parse_arguments()
 
     if args.update_games:
