@@ -1,6 +1,7 @@
 import argparse
 import ExtractData.ExtractSteamData as ExtractData
 import LoadData.LoadSteamData as LoadData
+import TransformData.TransformSteamData as TransformData
 
 def cron_job_fetch_games():
     games_df = ExtractData.fetch_all_steam_games()
@@ -8,9 +9,9 @@ def cron_job_fetch_games():
 
 def fetch_reviews_for_game(gameid, review_limit):
     reviews_df = ExtractData.fetch_game_reviews(gameid, review_limit)
-    users_df, reviews_df = ExtractData.transform_review_data(reviews_df)
-    LoadData.append_sql_data(reviews_df)
-    LoadData.append_sql_data(users_df)
+    users_df, reviews_df = TransformData.transform_review_data(reviews_df)
+    LoadData.append_sql_data(reviews_df, "reviws")
+    LoadData.append_sql_data(users_df, "users")
 
 def parse_arguments():
     parser = argparse.ArgumentParser(

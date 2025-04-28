@@ -2,10 +2,8 @@ from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 import os
 
-engine = None
-
 def create_tables():
-    global engine
+    engine = None
     try:
         load_dotenv()
 
@@ -32,9 +30,6 @@ def create_tables():
                 CREATE TABLE IF NOT EXISTS GAMES (
                     gameid INT NOT NULL AUTO_INCREMENT,
                     title VARCHAR(255) NOT NULL,
-                    developer VARCHAR(255),
-                    release_date DATE,
-                    genre VARCHAR(100),
                     PRIMARY KEY (gameid),
                     UNIQUE (title)
                 );
@@ -69,8 +64,8 @@ def create_tables():
             """))
 
             connection.commit()
-
-        print("Schema Created")
+            connection.close()
+        print("Schema successfully Created")
     except Exception as e:
         print(f"Error creating tables: {e}")
         engine = None
