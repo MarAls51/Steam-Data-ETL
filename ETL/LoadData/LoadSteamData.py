@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 
 engine = None
@@ -30,9 +30,12 @@ def start_sql_pipeline() -> bool:
         engine = None
         return False
 
-def insert_sql_data(df: pd.DataFrame, table_title: str):
-    df.to_sql(name=table_title, con=engine, if_exists='replace', index=False)
-    print("successfully inserted df into db")
+def insert_table_sql_data(df, table_title):
+    with engine.connect() as conn:
+        conn.execute(text(f"DELETE FROM {table_title}"))
+        conn.commit()
+    
+    df.to_sql(name=table_title, con=engine, if_exists='append', index=False)
 
 def append_sql_data(df: pd.DataFrame, table_title: str):
     df.to_sql(name=table_title, con=engine, if_exists='replace', index=False)

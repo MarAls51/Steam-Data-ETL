@@ -5,7 +5,7 @@ import TransformData.TransformSteamData as TransformData
 
 def cron_job_fetch_games():
     games_df = ExtractData.fetch_all_steam_games()
-    LoadData.insert_sql_data(games_df, "GAMES")
+    LoadData.insert_table_sql_data(games_df, "GAMES")
 
 def fetch_reviews_for_game(gameid, review_limit):
     reviews_df = ExtractData.fetch_game_reviews(gameid, review_limit)

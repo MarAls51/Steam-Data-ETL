@@ -10,8 +10,8 @@ def clean_data(data: list) -> pd.DataFrame:
     df = df.apply(lambda col: col.map(lambda x: 0 if pd.isna(x) else x))
     
     df.replace("", pd.NA, inplace=True)
-    df.drop_duplicates(inplace=True)
     df.dropna(axis="rows", inplace=True)
+    df.drop_duplicates(inplace=True)
 
     # just for debugging for the time being.
     df.to_csv("data_output.csv", index=False, encoding="utf-8")

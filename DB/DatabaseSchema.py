@@ -28,18 +28,17 @@ def create_tables():
 
             connection.execute(text("""
                 CREATE TABLE IF NOT EXISTS GAMES (
-                    gameid INT NOT NULL AUTO_INCREMENT,
-                    title VARCHAR(255) NOT NULL,
-                    PRIMARY KEY (gameid),
-                    UNIQUE (title)
+                    appid INT NOT NULL,
+                    name VARCHAR(255) NOT NULL,
+                    PRIMARY KEY (appid)
                 );
             """))
 
             connection.execute(text("""
                 CREATE TABLE IF NOT EXISTS REVIEWS (
-                    reviewid INT NOT NULL AUTO_INCREMENT,
+                    reviewid INT NOT NULL,
                     steamid BIGINT NOT NULL,
-                    gameid INT NOT NULL,
+                    appid INT NOT NULL,
                     recommendationid INT,
                     language VARCHAR(50),
                     timestamp_created DATETIME,
@@ -59,7 +58,7 @@ def create_tables():
                     last_played DATETIME,
                     PRIMARY KEY (reviewid),
                     FOREIGN KEY (steamid) REFERENCES USERS(steamid) ON DELETE CASCADE,
-                    FOREIGN KEY (gameid) REFERENCES GAMES(gameid) ON DELETE CASCADE
+                    FOREIGN KEY (appid) REFERENCES GAMES(appid) ON DELETE CASCADE
                 );
             """))
 
