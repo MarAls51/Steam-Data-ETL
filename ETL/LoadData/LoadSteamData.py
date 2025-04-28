@@ -1,10 +1,11 @@
-from sqlalchemy import create_engine, text
-from dotenv import load_dotenv
 import os
+import pandas as pd
+from sqlalchemy import create_engine
+from dotenv import load_dotenv
 
 engine = None
 
-def create_tables():
+def start_sql_pipeline() -> bool:
     global engine
     try:
         load_dotenv()
@@ -18,62 +19,21 @@ def create_tables():
         url = f'mysql+pymysql://{username}:{password}@{host}:{port}/{database}'
 
         engine = create_engine(url)
-        with engine.connect() as connection:
-            connection.execute(text("""
-                CREATE TABLE IF NOT EXISTS USERS (
-                    steamid BIGINT NOT NULL,
-                    num_games_owned INT NOT NULL,
-                    num_reviews INT NOT NULL,
-                    PRIMARY KEY (steamid)
-                );
-            """))
+        connection = engine.connect()
+        connection.close()
 
-            connection.execute(text("""
-                CREATE TABLE IF NOT EXISTS GAMES (
-                    gameid INT NOT NULL AUTO_INCREMENT,
-                    title VARCHAR(255) NOT NULL,
-                    developer VARCHAR(255),
-                    release_date DATE,
-                    genre VARCHAR(100),
-                    PRIMARY KEY (gameid),
-                    UNIQUE (title)
-                );
-            """))
+        print("Connection to RDS successful.")
+        return True
 
-            connection.execute(text("""
-                CREATE TABLE IF NOT EXISTS REVIEWS (
-                    reviewid INT NOT NULL AUTO_INCREMENT,
-                    steamid BIGINT NOT NULL,
-                    gameid INT NOT NULL,
-                    recommendationid INT,
-                    language VARCHAR(50),
-                    timestamp_created DATETIME,
-                    timestamp_updated DATETIME,
-                    voted_up BOOLEAN,
-                    votes_up INT,
-                    votes_funny INT,
-                    weighted_vote_score DECIMAL(5,2),
-                    comment_count INT,
-                    steam_purchase BOOLEAN,
-                    received_for_free BOOLEAN,
-                    written_during_early_access BOOLEAN,
-                    primarily_steam_deck BOOLEAN,
-                    playtime_at_review INT,
-                    playtime_forever INT,
-                    playtime_last_two_weeks INT,
-                    last_played DATETIME,
-                    PRIMARY KEY (reviewid),
-                    FOREIGN KEY (steamid) REFERENCES USERS(steamid) ON DELETE CASCADE,
-                    FOREIGN KEY (gameid) REFERENCES GAMES(gameid) ON DELETE CASCADE
-                );
-            """))
-
-            connection.commit()
-
-        print("Schema Created")
     except Exception as e:
-        print(f"Error creating tables: {e}")
+        print(f"Failed to connect to RDS: {e}")
         engine = None
+        return False
 
-if __name__ == '__main__':
-    create_tables()
+def insert_sql_data(df: pd.DataFrame, table_title: str):
+    df.to_sql(name=table_title, con=engine, if_exists='replace', index=False)
+    print("successfully inserted df into db")
+
+def append_sql_data(df: pd.DataFrame, table_title: str):
+    df.to_sql(name=table_title, con=engine, if_exists='replace', index=False)
+    print("successfully appended df into db")
