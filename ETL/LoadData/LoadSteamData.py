@@ -8,7 +8,6 @@ engine = None
 def start_sql_pipeline() -> bool:
     global engine
     try:
-
         load_dotenv()
 
         username = os.getenv('RDS_USERNAME')
@@ -31,6 +30,8 @@ def start_sql_pipeline() -> bool:
         engine = None
         return False
 
-def insert_sql_data(df: pd.DataFrame):
-    df.to_sql(name='games', con=engine, if_exists='replace', index=False)
+def insert_sql_data(df: pd.DataFrame, table_title: str):
+    df.to_sql(name=table_title, con=engine, if_exists='replace', index=False)
     print("successfully inserted df into db")
+
+
