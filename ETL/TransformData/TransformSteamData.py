@@ -7,7 +7,7 @@ def transform_review_data(reviews_df: pd.DataFrame):
     ]
 
     review_columns = [
-        'recommendationid', 'language', 'timestamp_created', 'timestamp_updated',
+        'appid','recommendationid', 'language', 'timestamp_created', 'timestamp_updated',
         'voted_up', 'votes_up', 'votes_funny', 'weighted_vote_score', 'comment_count',
         'steam_purchase', 'received_for_free', 'written_during_early_access',
         'primarily_steam_deck', 'steamid', 'playtime_at_review', 'playtime_forever', 'playtime_last_two_weeks', 'last_played'
