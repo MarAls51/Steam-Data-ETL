@@ -30,13 +30,14 @@ def start_sql_pipeline() -> bool:
         engine = None
         return False
 
-def insert_table_sql_data(df, table_title):
+def replace_table_sql_data(df, table_title):
     with engine.connect() as conn:
         conn.execute(text(f"DELETE FROM {table_title}"))
         conn.commit()
     
     df.to_sql(name=table_title, con=engine, if_exists='append', index=False)
+    print("successfully replaced db table")
 
 def append_sql_data(df: pd.DataFrame, table_title: str):
-    df.to_sql(name=table_title, con=engine, if_exists='replace', index=False)
+    df.to_sql(name=table_title, con=engine, if_exists='append', index=False)
     print("successfully appended df into db")

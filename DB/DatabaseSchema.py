@@ -36,7 +36,6 @@ def create_tables():
 
             connection.execute(text("""
                 CREATE TABLE IF NOT EXISTS REVIEWS (
-                    reviewid INT NOT NULL,
                     steamid BIGINT NOT NULL,
                     appid INT NOT NULL,
                     recommendationid INT,
@@ -56,7 +55,7 @@ def create_tables():
                     playtime_forever INT,
                     playtime_last_two_weeks INT,
                     last_played DATETIME,
-                    PRIMARY KEY (reviewid),
+                    PRIMARY KEY (recommendationid),
                     FOREIGN KEY (steamid) REFERENCES USERS(steamid) ON DELETE CASCADE,
                     FOREIGN KEY (appid) REFERENCES GAMES(appid) ON DELETE CASCADE
                 );

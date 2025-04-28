@@ -37,6 +37,5 @@ def fetch_game_reviews(gameid: str, review_limit: int = None) -> pd.DataFrame:
         raise Exception(f"Failed to fetch reviews for game with ID: {gameid}")
     
     data = clean_data(data)
-    data['appid'] = int(gameid)
     return data
 

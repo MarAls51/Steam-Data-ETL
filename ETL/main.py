@@ -5,13 +5,13 @@ import TransformData.TransformSteamData as TransformData
 
 def cron_job_fetch_games():
     games_df = ExtractData.fetch_all_steam_games()
-    LoadData.insert_table_sql_data(games_df, "GAMES")
+    LoadData.replace_table_sql_data(games_df, "GAMES")
 
 def fetch_reviews_for_game(gameid, review_limit):
     reviews_df = ExtractData.fetch_game_reviews(gameid, review_limit)
-    users_df, reviews_df = TransformData.transform_review_data(reviews_df)
-    LoadData.append_sql_data(reviews_df, "REVIEWS")
+    users_df, reviews_df = TransformData.transform_review_data(gameid, reviews_df)
     LoadData.append_sql_data(users_df, "USERS")
+    LoadData.append_sql_data(reviews_df, "REVIEWS")
 
 def parse_arguments():
     parser = argparse.ArgumentParser(

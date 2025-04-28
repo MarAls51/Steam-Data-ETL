@@ -1,6 +1,11 @@
 import pandas as pd
 
-def transform_review_data(reviews_df: pd.DataFrame):
+def transform_review_data(gameid, reviews_df: pd.DataFrame):
+
+
+    reviews_df['appid'] = int(gameid)
+    reviews_df['weighted_vote_score'] = pd.to_numeric(reviews_df['weighted_vote_score'])
+    reviews_df['weighted_vote_score'] = reviews_df['weighted_vote_score'].round(2)
 
     user_columns = [
         'steamid', 'num_games_owned', 'num_reviews'
