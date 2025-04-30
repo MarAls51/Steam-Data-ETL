@@ -1,14 +1,17 @@
 import argparse
-import ExtractData.ExtractSteamData as ExtractData
+import ExtractData.ExtractSteamData as ExtractSteamData
 import LoadData.LoadSteamData as LoadData
 import TransformData.TransformSteamData as TransformData
 
 def cron_job_fetch_games():
-    games_df = ExtractData.fetch_all_steam_games()
+    games_df = ExtractSteamData.fetch_all_steam_games()
     LoadData.replace_table_sql_data(games_df, "GAMES")
 
+def cron_job_fetch_all_sql_data():
+    LoadData.export_tables_to_csv()
+
 def fetch_reviews_for_game(gameid, review_limit):
-    reviews_df = ExtractData.fetch_game_reviews(gameid, review_limit)
+    reviews_df = ExtractSteamData.fetch_game_reviews(gameid, review_limit)
     users_df, reviews_df = TransformData.transform_review_data(gameid, reviews_df)
     LoadData.append_sql_data(users_df, "USERS")
     LoadData.append_sql_data(reviews_df, "REVIEWS")
@@ -21,6 +24,11 @@ def parse_arguments():
         '--update-games', 
         action='store_true', 
         help='Fetch and update the newest games from Steam.'
+    )
+    parser.add_argument(
+        '--fetch-sql-data', 
+        action='store_true', 
+        help='Fetch and update the csv files with the newest sql data.'
     )
     parser.add_argument(
         '--game-id', 
@@ -44,6 +52,8 @@ def main():
         cron_job_fetch_games()
     elif args.game_id:
         fetch_reviews_for_game(args.game_id, args.review_limit)
+    elif args.fetch_sql_data:
+        cron_job_fetch_all_sql_data()
     else:
         print("No action specified.")
 

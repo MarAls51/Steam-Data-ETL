@@ -41,3 +41,22 @@ def replace_table_sql_data(df, table_title):
 def append_sql_data(df: pd.DataFrame, table_title: str):
     df.to_sql(name=table_title, con=engine, if_exists='append', index=False)
     print("successfully appended df into db")
+
+def export_tables_to_csv():
+    desktop = os.path.join(os.path.expanduser("~"), "Desktop")
+    output_dir = os.path.join(desktop, os.getenv('RDS_DATABASE'))
+
+    os.makedirs(output_dir, exist_ok=True)
+
+    table_names = ["USERS", "REVIEWS", "GAMES"]
+
+    try:
+        for table in table_names:
+            df = pd.read_sql_table(table, engine)
+
+            output_path = os.path.join(output_dir, f"{table}.csv")
+            df.to_csv(output_path, index=False)
+
+            print(f"Successfully exported {table} to {output_path}")
+    except Exception as e:
+        print(f"Failed to export tables: {e}")
