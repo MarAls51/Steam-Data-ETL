@@ -3,7 +3,6 @@ import requests
 import ExtractData.CursorPagination as CursorPagination
 import re
 
-# general cleaning of data
 def clean_data(data: list) -> pd.DataFrame:
     df = pd.DataFrame(data)
     df = df.map(lambda x: re.sub(r"[^A-Za-z0-9\s\-\.,!?]", "", str(x)) if pd.notna(x) else x)
@@ -12,9 +11,6 @@ def clean_data(data: list) -> pd.DataFrame:
     df.replace("", pd.NA, inplace=True)
     df.dropna(axis="rows", inplace=True)
     df.drop_duplicates(inplace=True)
-
-    # just for debugging for the time being.
-    df.to_csv("data_output.csv", index=False, encoding="utf-8")
     
     return df
 
