@@ -1,6 +1,6 @@
 import pandas as pd
 import requests
-import ExtractData.CursorPagination as CursorPagination
+import ExtractData.Pagination as Pagination
 import re
 
 def clean_data(data: list) -> pd.DataFrame:
@@ -27,7 +27,7 @@ def fetch_all_steam_games() -> pd.DataFrame:
     
 # fetches all reviews for a specific game
 def fetch_game_reviews(gameid: str, review_limit: int = None) -> pd.DataFrame:
-    data = CursorPagination.cursor_pagination(gameid, review_limit)
+    data = CursorPagination.offset_pagination(gameid, review_limit)
     
     if data is None or len(data) == 0:
         raise Exception(f"Failed to fetch reviews for game with ID: {gameid}")
