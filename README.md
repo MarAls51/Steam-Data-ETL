@@ -1,1 +1,2 @@
-[powerbi.pdf](https://github.com/user-attachments/files/20012793/powerbi.pdf)
+
+![powerbi](https://github.com/user-attachments/assets/962dee47-4c85-46dc-8f5a-744bcc673f1d)
