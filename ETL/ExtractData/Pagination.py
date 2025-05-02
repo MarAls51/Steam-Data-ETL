@@ -54,7 +54,7 @@ def cursor_pagination(gameid: str, review_limit: int = None):
     per_page = 100
 
     while True:
-        url = f"{BASE_URL}{gameid}?json=1&num_per_page={per_page}&cursor={cursor}"
+        url = f"{BASE_URL}{gameid}?json=1&num_per_page={per_page}&cursor={cursor}&filter=all&day_range=365"
 
         reviews, data = fetch_reviews(url, seen_review_ids)
         if reviews == "retry":
@@ -87,7 +87,7 @@ def offset_pagination(gameid: str, review_limit: int = None):
     per_page = 100
 
     while True:
-        url = f"{BASE_URL}{gameid}?json=1&num_per_page={per_page}&start_offset={total_reviews}"
+        url = f"{BASE_URL}{gameid}?json=1&num_per_page={per_page}&start_offset={total_reviews}&filter=all&day_range=365"
 
         reviews, _ = fetch_reviews(url, seen_review_ids)
         if reviews == "retry":
