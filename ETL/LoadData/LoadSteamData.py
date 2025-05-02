@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, inspect, text
 from dotenv import load_dotenv
 
 engine = None
@@ -31,16 +31,20 @@ def start_sql_pipeline() -> bool:
         return False
 
 def replace_table_sql_data(df, table_title):
+    inspector = inspect(engine)
+    table_exists = inspector.has_table(table_title)
+
     with engine.connect() as conn:
-        conn.execute(text(f"DELETE FROM {table_title}"))
-        conn.commit()
+        if table_exists:
+            conn.execute(text(f"DELETE FROM {table_title}"))
+            conn.commit()
     
     df.to_sql(name=table_title, con=engine, if_exists='append', index=False)
-    print("successfully replaced db table")
+    print(f"successfully replaced {table_title} db table")
 
 def append_sql_data(df: pd.DataFrame, table_title: str):
     df.to_sql(name=table_title, con=engine, if_exists='append', index=False)
-    print("successfully appended df into db")
+    print(f"successfully appended {table_title} df into db")
 
 def export_tables_to_csv():
     desktop = os.path.join(os.path.expanduser("~"), "Desktop")
