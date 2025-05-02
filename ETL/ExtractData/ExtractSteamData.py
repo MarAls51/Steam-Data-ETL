@@ -27,7 +27,7 @@ def fetch_all_steam_games() -> pd.DataFrame:
     
 # fetches all reviews for a specific game
 def fetch_game_reviews(gameid: str, review_limit: int = None) -> pd.DataFrame:
-    data = CursorPagination.offset_pagination(gameid, review_limit)
+    data = Pagination.offset_pagination(gameid, review_limit)
     
     if data is None or len(data) == 0:
         raise Exception(f"Failed to fetch reviews for game with ID: {gameid}")
