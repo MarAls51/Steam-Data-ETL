@@ -1,6 +1,5 @@
 # just playing around with sql alchemy. 
 
-
 from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 import os
@@ -22,6 +21,7 @@ def run_queries():
         result = connection.execute(text("SELECT * FROM USERS"))
         for row in result:
             print(row)
+
         print("\n--- REVIEWS WITH GAME NAMES ---")
         result = connection.execute(text("""
             SELECT R.recommendationid, U.steamid, G.name, R.voted_up, R.weighted_vote_score
@@ -69,8 +69,6 @@ def run_queries():
         connection.commit()
         print("\nDeleted reviews for appid=100")
 
-        connection.commit()
-
         print("\n--- TOP GAMES BY TOTAL UPVOTES ---")
         result = connection.execute(text("""
             SELECT G.name, SUM(R.votes_up) AS total_upvotes
@@ -79,6 +77,33 @@ def run_queries():
             GROUP BY G.name
             ORDER BY total_upvotes DESC
             LIMIT 5
+        """))
+        for row in result:
+            print(row)
+
+        print("\n--- TOP 5 USERS BY TOTAL PLAYTIME ---")
+        result = connection.execute(text("""
+            SELECT U.steamid, SUM(R.playtime_forever) AS total_playtime
+            FROM USERS U
+            JOIN REVIEWS R ON U.steamid = R.steamid
+            GROUP BY U.steamid
+            ORDER BY total_playtime DESC
+            LIMIT 5
+        """))
+        for row in result:
+            print(row)
+
+        print("\n--- GAMES WITH MIXED REVIEWS ---")
+        result = connection.execute(text("""
+            SELECT G.name,
+                   SUM(R.votes_up) AS upvotes,
+                   SUM(R.votes_funny + R.votes_up) AS total_votes,
+                   ROUND(SUM(R.votes_up) / NULLIF(SUM(R.votes_funny + R.votes_up), 0) * 100, 2) AS upvote_ratio
+            FROM REVIEWS R
+            JOIN GAMES G ON R.appid = G.appid
+            GROUP BY G.name
+            HAVING upvote_ratio BETWEEN 40 AND 60
+            ORDER BY upvote_ratio
         """))
         for row in result:
             print(row)
