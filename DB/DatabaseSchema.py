@@ -10,42 +10,40 @@ def create_tables():
         username = os.getenv('RDS_USERNAME')
         password = os.getenv('RDS_PASSWORD')
         host = os.getenv('RDS_HOST')
-        port = os.getenv('RDS_PORT', 3306)
+        port = os.getenv('RDS_PORT', 5432)
         database = os.getenv('RDS_DATABASE')
 
-        url = f'mysql+pymysql://{username}:{password}@{host}:{port}/{database}'
+        url = f'postgresql://{username}:{password}@{host}:{port}/{database}'
 
         engine = create_engine(url)
         with engine.connect() as connection:
             connection.execute(text("""
-                CREATE TABLE IF NOT EXISTS USERS (
-                    steamid BIGINT NOT NULL,
+                CREATE TABLE IF NOT EXISTS users (
+                    steamid BIGINT PRIMARY KEY,
                     num_games_owned INT NOT NULL,
-                    num_reviews INT NOT NULL,
-                    PRIMARY KEY (steamid)
+                    num_reviews INT NOT NULL
                 );
             """))
 
             connection.execute(text("""
-                CREATE TABLE IF NOT EXISTS GAMES (
-                    appid INT NOT NULL,
-                    name VARCHAR(255) NOT NULL,
-                    PRIMARY KEY (appid)
+                CREATE TABLE IF NOT EXISTS games (
+                    appid INT PRIMARY KEY,
+                    name TEXT NOT NULL
                 );
             """))
 
             connection.execute(text("""
-                CREATE TABLE IF NOT EXISTS REVIEWS (
+                CREATE TABLE IF NOT EXISTS reviews (
+                    recommendationid BIGINT PRIMARY KEY,
                     steamid BIGINT NOT NULL,
                     appid INT NOT NULL,
-                    recommendationid INT,
                     language VARCHAR(50),
-                    timestamp_created DATETIME,
-                    timestamp_updated DATETIME,
+                    timestamp_created TIMESTAMP,
+                    timestamp_updated TIMESTAMP,
                     voted_up BOOLEAN,
                     votes_up INT,
                     votes_funny INT,
-                    weighted_vote_score DECIMAL(5,2),
+                    weighted_vote_score NUMERIC(5,2),
                     comment_count INT,
                     steam_purchase BOOLEAN,
                     received_for_free BOOLEAN,
@@ -54,16 +52,14 @@ def create_tables():
                     playtime_at_review INT,
                     playtime_forever INT,
                     playtime_last_two_weeks INT,
-                    last_played DATETIME,
-                    PRIMARY KEY (recommendationid),
-                    FOREIGN KEY (steamid) REFERENCES USERS(steamid) ON DELETE CASCADE,
-                    FOREIGN KEY (appid) REFERENCES GAMES(appid) ON DELETE CASCADE
+                    last_played TIMESTAMP,
+                    FOREIGN KEY (steamid) REFERENCES users(steamid) ON DELETE CASCADE,
+                    FOREIGN KEY (appid) REFERENCES games(appid) ON DELETE CASCADE
                 );
             """))
 
             connection.commit()
-            connection.close()
-        print("Schema successfully Created")
+        print("Schema successfully created")
     except Exception as e:
         print(f"Error creating tables: {e}")
         engine = None
