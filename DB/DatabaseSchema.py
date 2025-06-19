@@ -13,7 +13,7 @@ def create_tables():
         port = os.getenv('RDS_PORT', 5432)
         database = os.getenv('RDS_DATABASE')
 
-        url = f'postgresql://{username}:{password}@{host}:{port}/{database}'
+        url = f'postgresql+psycopg2://{username}:{password}@{host}:{port}/{database}'
 
         engine = create_engine(url)
         with engine.connect() as connection:

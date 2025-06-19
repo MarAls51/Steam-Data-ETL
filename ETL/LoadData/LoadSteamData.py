@@ -16,7 +16,7 @@ def start_sql_pipeline() -> bool:
         port = os.getenv('RDS_PORT', 3306)
         database = os.getenv('RDS_DATABASE')
 
-        url = f'mysql+pymysql://{username}:{password}@{host}:{port}/{database}'
+        url = f'postgresql+psycopg2://{username}:{password}@{host}:{port}/{database}'
 
         engine = create_engine(url)
         connection = engine.connect()
