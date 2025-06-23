@@ -11,9 +11,8 @@ def clean_data(data: list, row_na_threshold: float = 0.5, col_na_threshold: floa
     df = pd.DataFrame(data)
 
     df = df.map(lambda x: re.sub(r"[^A-Za-z0-9\s\-\.,!?]", "", str(x)) if pd.notna(x) else x)
-    df = df.applymap(lambda x: re.sub(r'\s+', ' ', x.strip()) if isinstance(x, str) else x)
-    df = df.apply(pd.to_numeric, errors='ignore')
-    df = df.applymap(lambda x: x.lower() if isinstance(x, str) else x)
+    df = df.map(lambda x: re.sub(r'\s+', ' ', x.strip()) if isinstance(x, str) else x)
+    df = df.map(lambda x: x.lower() if isinstance(x, str) else x)
     df.replace("", pd.NA, inplace=True)
     df.dropna(axis=0, thresh=int(row_na_threshold * df.shape[1]), inplace=True)
     df.dropna(axis=1, thresh=int((1 - col_na_threshold) * df.shape[0]), inplace=True)
