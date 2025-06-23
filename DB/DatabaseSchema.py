@@ -1,11 +1,9 @@
 from sqlalchemy import create_engine, text
-from dotenv import load_dotenv
 import os
 
 def create_tables():
     engine = None
     try:
-        load_dotenv()
 
         username = os.getenv('RDS_USERNAME')
         password = os.getenv('RDS_PASSWORD')
@@ -18,7 +16,7 @@ def create_tables():
         engine = create_engine(url)
         with engine.connect() as connection:
             connection.execute(text("""
-                CREATE TABLE IF NOT EXISTS users (
+                CREATE TABLE IF NOT EXISTS USERS (
                     steamid BIGINT PRIMARY KEY,
                     num_games_owned INT NOT NULL,
                     num_reviews INT NOT NULL
@@ -26,14 +24,14 @@ def create_tables():
             """))
 
             connection.execute(text("""
-                CREATE TABLE IF NOT EXISTS games (
+                CREATE TABLE IF NOT EXISTS GAMES (
                     appid INT PRIMARY KEY,
                     name TEXT NOT NULL
                 );
             """))
 
             connection.execute(text("""
-                CREATE TABLE IF NOT EXISTS reviews (
+                CREATE TABLE IF NOT EXISTS REVIEWS (
                     recommendationid BIGINT PRIMARY KEY,
                     steamid BIGINT NOT NULL,
                     appid INT NOT NULL,

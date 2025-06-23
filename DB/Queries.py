@@ -1,9 +1,7 @@
 from sqlalchemy import create_engine, text
-from dotenv import load_dotenv
 import os
 
 def run_queries():
-    load_dotenv()
     username = os.getenv('RDS_USERNAME')
     password = os.getenv('RDS_PASSWORD')
     host = os.getenv('RDS_HOST')
