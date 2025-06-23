@@ -1,59 +1,61 @@
 import argparse
 import ExtractData.ExtractSteamData as ExtractSteamData
-import LoadData.LoadSteamData as LoadData
+from LoadData.LoadSteamData import Database
 import TransformData.TransformSteamData as TransformData
 
-def cron_job_fetch_games():
+def cron_job_fetch_games(db: Database):
     games_df = ExtractSteamData.fetch_all_steam_games()
-    LoadData.replace_table_sql_data(games_df, "GAMES")
+    db.replace_table(games_df, "GAMES")
 
-def cron_job_fetch_all_sql_data():
-    LoadData.export_tables_to_csv()
+def cron_job_fetch_all_sql_data(db: Database):
+    db.export_tables_to_csv()
 
-def fetch_reviews_for_game(gameid, review_limit):
+def fetch_reviews_for_game(db: Database, gameid, review_limit):
     reviews_df = ExtractSteamData.fetch_game_reviews(gameid, review_limit)
     users_df, reviews_df = TransformData.transform_review_data(gameid, reviews_df)
-    LoadData.append_sql_data(users_df, "USERS")
-    LoadData.append_sql_data(reviews_df, "REVIEWS")
+    db.append_table(users_df, "USERS")
+    db.append_table(reviews_df, "REVIEWS")
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
         description="Steam ETL: Fetch and update Steam game data and reviews."
     )
     parser.add_argument(
-        '--update-games', 
-        action='store_true', 
+        '--update-games',
+        action='store_true',
         help='Fetch and update the newest games from Steam.'
     )
     parser.add_argument(
-        '--fetch-sql-data', 
-        action='store_true', 
-        help='Fetch and update the csv files with the newest sql data.'
+        '--fetch-sql-data',
+        action='store_true',
+        help='Export all SQL tables to CSV files.'
     )
     parser.add_argument(
-        '--game-id', 
-        type=int, 
+        '--game-id',
+        type=int,
         help='Fetch reviews for a specific game by its App ID.'
     )
     parser.add_argument(
-        '--review-limit', 
-        type=int, 
-        default=None, 
+        '--review-limit',
+        type=int,
+        default=None,
         help='Limit the number of reviews fetched.'
     )
     return parser.parse_args()
 
 def main():
-    if not LoadData.start_sql_pipeline():
+    db = Database()
+    if not db.connect():
         return
+
     args = parse_arguments()
 
     if args.update_games:
-        cron_job_fetch_games()
+        cron_job_fetch_games(db)
     elif args.game_id:
-        fetch_reviews_for_game(args.game_id, args.review_limit)
+        fetch_reviews_for_game(db, args.game_id, args.review_limit)
     elif args.fetch_sql_data:
-        cron_job_fetch_all_sql_data()
+        cron_job_fetch_all_sql_data(db)
     else:
         print("No action specified.")
 
