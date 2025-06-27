@@ -1,20 +1,29 @@
 import requests
 import time
+import random
 
 BASE_URL = "https://store.steampowered.com/appreviews/"
+INITIAL_BACKOFF = 1.0    
+MAX_BACKOFF = 60.0      
 
-def fetch_reviews(url, seen_review_ids):
+def fetch_reviews(url, seen_review_ids, attempt=1):
     try:
         response = requests.get(url)
     except requests.exceptions.RequestException as e:
-        print(f"Request failed: {str(e)}\n")
-        return None, None
+        backoff = min(INITIAL_BACKOFF * 2 ** (attempt - 1), MAX_BACKOFF)
+        jitter = random.uniform(0, 0.5)
+        print(f"Request error: {e}. Retrying in {backoff + jitter:.2f} seconds.\n")
+        time.sleep(backoff + jitter)
+        return fetch_reviews(url, seen_review_ids, attempt + 1)
 
     if response.status_code == 429:
-        retry_after = int(response.headers.get("Retry-After", 5))
-        print(f"Rate limited. Retrying after {retry_after} seconds.\n")
-        time.sleep(retry_after)
-        return "retry", None
+        retry_after = int(response.headers.get("Retry-After", 0))
+        if retry_after == 0:
+            retry_after = min(INITIAL_BACKOFF * 2 ** (attempt - 1), MAX_BACKOFF)
+        jitter = random.uniform(0, 0.5)
+        print(f"Rate limited (429). Retrying after {retry_after + jitter:.2f} seconds.\n")
+        time.sleep(retry_after + jitter)
+        return fetch_reviews(url, seen_review_ids, attempt + 1)
 
     if response.status_code != 200:
         print(f"Error fetching reviews: {response.status_code}\n")
@@ -34,7 +43,7 @@ def fetch_reviews(url, seen_review_ids):
     for review in data.get('reviews', []):
         review_id = review.get('recommendationid')
         if review_id in seen_review_ids:
-            continue 
+            continue
         seen_review_ids.add(review_id)
 
         review.pop('review', "")
