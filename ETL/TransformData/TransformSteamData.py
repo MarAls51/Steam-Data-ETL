@@ -3,16 +3,18 @@ import pandas as pd
 def transform_unix_to_datetime(df, columns):
     for col in columns:
         df[col] = pd.to_datetime(pd.to_numeric(df[col], errors='coerce'), unit='s', errors='coerce')
-
     return df
 
 def transform_review_data(gameid, reviews_df: pd.DataFrame):
     reviews_df['appid'] = int(gameid)
-    reviews_df['weighted_vote_score'] = pd.to_numeric(reviews_df['weighted_vote_score'])
-    reviews_df['weighted_vote_score'] = reviews_df['weighted_vote_score'].round(2)
+    reviews_df['weighted_vote_score'] = pd.to_numeric(reviews_df['weighted_vote_score']).round(2)
 
-    date_columns = ['timestamp_created', 'timestamp_updated', 'last_played', 'playtime_at_review', 'playtime_forever', 'playtime_last_two_weeks']
-    reviews_df = transform_unix_to_datetime(reviews_df, date_columns)
+    datetime_columns = ['timestamp_created', 'timestamp_updated', 'last_played']
+    reviews_df = transform_unix_to_datetime(reviews_df, datetime_columns)
+
+    playtime_columns = ['playtime_at_review', 'playtime_forever', 'playtime_last_two_weeks']
+    for col in playtime_columns:
+        reviews_df[col] = pd.to_numeric(reviews_df[col], errors='coerce').fillna(0).astype(int)
 
     user_columns = [
         'steamid', 'num_games_owned', 'num_reviews'

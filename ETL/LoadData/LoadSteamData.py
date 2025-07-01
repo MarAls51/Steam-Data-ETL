@@ -46,13 +46,23 @@ class Database:
         df.to_sql(name=table_name, con=self.engine, if_exists='append', index=False)
         print(f"Replaced data in table '{table_name}'.")
 
-    def append_table(self, df: pd.DataFrame, table_name: str):
+    def append_table(self, df: pd.DataFrame, table_name: str, pk_column: str = 'steamid'):
         if self.engine is None:
             print("Engine not initialized. Call connect() first.")
             return
+        
+        existing_ids = pd.read_sql(f'SELECT {pk_column} FROM "{table_name}"', self.engine)[pk_column].astype(str).tolist()
+        df[pk_column] = df[pk_column].astype(str)
+        
+        df_filtered = df[~df[pk_column].isin(existing_ids)]
+        
+        if df_filtered.empty:
+            print(f"No new rows to insert into '{table_name}'.")
+            return
+        
+        df_filtered.to_sql(name=table_name, con=self.engine, if_exists='append', index=False)
+        print(f"Appended {len(df_filtered)} new rows to table '{table_name}'.")
 
-        df.to_sql(name=table_name, con=self.engine, if_exists='append', index=False)
-        print(f"Appended data to table '{table_name}'.")
 
     def export_tables_to_csv(self, output_dir=None):
         if self.engine is None:
