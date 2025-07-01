@@ -75,7 +75,7 @@ class Database:
 
         os.makedirs(output_dir, exist_ok=True)
 
-        table_names = ["users", "reviews", "games"]
+        table_names = ["USERS", "REVIEWS", "GAMES"]
 
         try:
             for table in table_names:
