@@ -1,2 +1,2 @@
 
-![powerbi](https://github.com/user-attachments/assets/962dee47-4c85-46dc-8f5a-744bcc673f1d)
+[Dashboard.pdf](https://github.com/user-attachments/files/21068340/Dashboard.pdf)
