@@ -1,2 +1,2 @@
+![Dashboard](https://github.com/user-attachments/assets/7d2b6309-9fea-46ac-a8bf-dddc66e8a62d)
 
-![powerbi](https://github.com/user-attachments/assets/962dee47-4c85-46dc-8f5a-744bcc673f1d)
