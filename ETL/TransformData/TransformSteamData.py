@@ -1,11 +1,31 @@
 import pandas as pd
 
 def transform_unix_to_datetime(df, columns):
+    """
+    Convert specified Unix timestamp columns in a DataFrame to datetime format.
+
+    Args:
+        df (pd.DataFrame): The input DataFrame containing Unix timestamps.
+        columns (list): List of column names to convert.
+
+    Returns:
+        pd.DataFrame: The DataFrame with converted datetime columns.
+    """
     for col in columns:
         df[col] = pd.to_datetime(pd.to_numeric(df[col], errors='coerce'), unit='s', errors='coerce')
     return df
 
 def transform_review_data(gameid, reviews_df: pd.DataFrame):
+    """
+    Transform raw review data by cleaning types, extracting user info, and formatting timestamps.
+
+    Args:
+        gameid (int): Steam App ID associated with the reviews.
+        reviews_df (pd.DataFrame): DataFrame containing raw review data.
+
+    Returns:
+        tuple: A tuple containing two DataFrames — (users_df, review_data_df)
+    """
     reviews_df['appid'] = int(gameid)
     reviews_df['weighted_vote_score'] = pd.to_numeric(reviews_df['weighted_vote_score']).round(2)
 

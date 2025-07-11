@@ -6,6 +6,9 @@ from dotenv import load_dotenv
 
 class Database:
     def __init__(self):
+        """
+        Initialize the Database class by loading environment variables and setting connection parameters.
+        """
         load_dotenv()
 
         self.username = os.getenv('RDS_USERNAME')
@@ -17,6 +20,12 @@ class Database:
         self.engine = None
 
     def connect(self) -> bool:
+        """
+        Establish a connection to the PostgreSQL database using SQLAlchemy.
+
+        Returns:
+            bool: True if connection is successful, False otherwise.
+        """
         try:
             url = f'postgresql+psycopg2://{self.username}:{self.password}@{self.host}:{self.port}/{self.database}'
             self.engine = create_engine(url)
@@ -33,6 +42,13 @@ class Database:
             return False
 
     def replace_table(self, df: pd.DataFrame, table_name: str):
+        """
+        Replace all records in a database table with new data from a DataFrame.
+
+        Args:
+            df (pd.DataFrame): The new data to insert.
+            table_name (str): The name of the table to replace.
+        """
         if self.engine is None:
             print("Engine not initialized. Call connect() first.")
             return
@@ -47,6 +63,14 @@ class Database:
         print(f"Replaced data in table '{table_name}'.")
 
     def append_table(self, df: pd.DataFrame, table_name: str, pk_column: str = 'steamid'):
+        """
+        Append new records to a table, skipping rows that already exist based on a primary key column.
+
+        Args:
+            df (pd.DataFrame): The data to insert.
+            table_name (str): The name of the target table.
+            pk_column (str): The column used to identify existing records (default: 'steamid').
+        """
         if self.engine is None:
             print("Engine not initialized. Call connect() first.")
             return
@@ -63,8 +87,13 @@ class Database:
         df_filtered.to_sql(name=table_name, con=self.engine, if_exists='append', index=False)
         print(f"Appended {len(df_filtered)} new rows to table '{table_name}'.")
 
-
     def export_tables_to_csv(self, output_dir=None):
+        """
+        Export predefined database tables (GAMES, REVIEWS, USERS) to CSV files.
+
+        Args:
+            output_dir (str, optional): The directory to save CSV files. If not provided, exports to Desktop.
+        """
         if self.engine is None:
             print("Engine not initialized. Call connect() first.")
             return
