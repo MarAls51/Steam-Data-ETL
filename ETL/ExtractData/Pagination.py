@@ -7,6 +7,17 @@ INITIAL_BACKOFF = 1.0
 MAX_BACKOFF = 60.0      
 
 def fetch_reviews(url, seen_review_ids, attempt=1):
+    """
+    Fetch review data from a given Steam API URL with retry logic and exponential backoff.
+
+    Args:
+        url (str): The full URL to request reviews from.
+        seen_review_ids (set): A set of already seen review IDs to prevent duplicates.
+        attempt (int): The current attempt number for exponential backoff.
+
+    Returns:
+        tuple: (reviews: list, data: dict) if successful; (None, None) otherwise.
+    """
     try:
         response = requests.get(url)
     except requests.exceptions.RequestException as e:
@@ -56,6 +67,16 @@ def fetch_reviews(url, seen_review_ids, attempt=1):
     return reviews, data
 
 def cursor_pagination(gameid: str, review_limit: int = None):
+    """
+    Fetch reviews for a game using cursor-based pagination from the Steam API.
+
+    Args:
+        gameid (str): The App ID of the game.
+        review_limit (int, optional): Maximum number of reviews to fetch.
+
+    Returns:
+        list: A list of all collected reviews (as dicts), or None if an error occurred.
+    """
     all_reviews = []
     seen_review_ids = set()
     seen_cursors = set()
@@ -90,6 +111,16 @@ def cursor_pagination(gameid: str, review_limit: int = None):
     return all_reviews
 
 def offset_pagination(gameid: str, review_limit: int = None):
+    """
+    Fetch reviews for a game using offset-based pagination from the Steam API.
+
+    Args:
+        gameid (str): The App ID of the game.
+        review_limit (int, optional): Maximum number of reviews to fetch.
+
+    Returns:
+        list: A list of all collected reviews (as dicts), or None if an error occurred.
+    """
     all_reviews = []
     seen_review_ids = set()
     total_reviews = 0
