@@ -1,7 +1,7 @@
 FROM python:3.10-slim
 
 RUN apt-get update && \
-    apt-get install -y cron && \
+    apt-get install -y cron postgresql postgresql-contrib sudo && \
     apt-get clean
 
 WORKDIR /app
@@ -16,4 +16,9 @@ RUN echo "30 2 * * * root python /app/main.py --update-games >> /var/log/cron.lo
 
 RUN touch /var/log/cron.log
 
-CMD cron && tail -f /var/log/cron.log
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
+EXPOSE 5432
+
+CMD ["/app/start.sh"]
